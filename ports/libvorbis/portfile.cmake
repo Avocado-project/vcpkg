@@ -9,6 +9,24 @@ vcpkg_from_github(
         0002-Fixup-pkgconfig-libs.patch
 )
 
+file(TO_NATIVE_PATH "${CURRENT_INSTALLED_DIR}/include" OGG_INCLUDE)
+foreach(LIBNAME ogg.lib libogg.a libogg.dylib libogg.so)
+    if(EXISTS "${CURRENT_INSTALLED_DIR}/lib/${LIBNAME}" OR EXISTS "${CURRENT_INSTALLED_DIR}/debug/lib/${LIBNAME}")
+        file(TO_NATIVE_PATH "${CURRENT_INSTALLED_DIR}/lib/${LIBNAME}" OGG_LIB_REL)
+        file(TO_NATIVE_PATH "${CURRENT_INSTALLED_DIR}/debug/lib/${LIBNAME}" OGG_LIB_DBG)
+        break()
+    endif()
+endforeach()
+
+if(NOT OGG_LIB_REL)
+    message(FATAL_ERROR "Could not find libraries for dependency libogg!")
+endif()
+
+file(COPY
+    ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt
+    DESTINATION ${SOURCE_PATH}/lib
+)
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA

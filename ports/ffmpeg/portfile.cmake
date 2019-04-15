@@ -365,11 +365,15 @@ endif()
 
 set(OPTIONS_DEBUG "--debug") # Note: --disable-optimizations can't be used due to http://ffmpeg.org/pipermail/libav-user/2013-March/003945.html
 set(OPTIONS_RELEASE "")
+set(OPTIONS_DEBUG "--enable-debug")
 
 set(OPTIONS "${OPTIONS} ${OPTIONS_CROSS}")
+set(OPTIONS "${OPTIONS} --extra-cflags=-DHAVE_UNISTD_H=0")
+set(OPTIONS "${OPTIONS} --arch=${VCPKG_TARGET_ARCHITECTURE}")
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
+	set(OPTIONS "${OPTIONS} --enable-pic")
     if (VCPKG_TARGET_IS_UWP)
         set(OPTIONS "${OPTIONS} --extra-ldflags=-APPCONTAINER --extra-ldflags=WindowsApp.lib")
     endif()
@@ -487,7 +491,9 @@ if("ffplay" IN_LIST FEATURES)
     vcpkg_copy_tools(TOOL_NAMES ffplay AUTO_CLEAN)
 endif()
 
+if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/debug/share)
+endif()
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)

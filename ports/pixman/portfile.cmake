@@ -1,4 +1,8 @@
+include(vcpkg_common_functions)
+
+if(WIN32)
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
+endif()
 
 set(PIXMAN_VERSION 0.38.4)
 vcpkg_download_distfile(ARCHIVE

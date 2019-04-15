@@ -131,6 +131,19 @@ string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" LWS_WITH_SHARED)
 # option(LWS_WITH_LWS_DSH "Support lws_dsh_t Disordered Shared Heap" OFF)
 ##
 
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+	message(STATUS ${curdir}/${child})
+    LIST(APPEND dirlist ${child})
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+
+SUBDIRLIST(SUBDIRS ${SOURCE_PATH})
+
+if(1)
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
@@ -148,14 +161,25 @@ vcpkg_configure_cmake(
     # OPTIONS_RELEASE -DOPTIMIZE=1
     # OPTIONS_DEBUG -DDEBUGGABLE=1
 )
+endif()
 
 vcpkg_install_cmake()
+
+message("CURRENT_PACKAGES_DIR=${CURRENT_PACKAGES_DIR}")
+message("SOURCE_PATH=${SOURCE_PATH}")
+SUBDIRLIST(SUBDIRS ${CURRENT_PACKAGES_DIR})
 
 if (VCPKG_TARGET_IS_WINDOWS)
     vcpkg_fixup_cmake_targets(CONFIG_PATH cmake)
 else()
     vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/libwebsockets)
 endif()
+
+# if(WIN32)
+# vcpkg_fixup_cmake_targets(CONFIG_PATH cmake)
+# else()
+# vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake TARGET_PATH share)
+# endif()
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)

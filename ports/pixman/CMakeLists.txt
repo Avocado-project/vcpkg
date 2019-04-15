@@ -50,6 +50,9 @@ set(PIXMAN_DEFS
     PACKAGE_BUGREPORT=""
 )
 
+find_package(Threads REQUIRED)
+find_library(LIBMATH NAMES m libm)
+
 if(VCPKG_TARGET_ARCHITECTURE STREQUAL arm64 OR VCPKG_TARGET_ARCHITECTURE STREQUAL arm)
     # don't enable SSE2 for arm64-windows and arm-windows
 else()
@@ -70,6 +73,10 @@ endif()
 # pixman produces a lot of warnings which are disabled here because they otherwise fill up the log files
 if(MSVC)
     target_compile_options(pixman-1 PRIVATE "/wd4244" "/wd4146" "/wd4996") #  PUBLIC "/D_CRT_SECURE_NO_WARNINGS"
+endif()
+
+if(UNIX)
+	target_link_libraries(pixman-1 PRIVATE Threads::Threads ${LIBMATH})
 endif()
 
 install(TARGETS pixman-1
