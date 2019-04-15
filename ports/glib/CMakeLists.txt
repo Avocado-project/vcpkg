@@ -54,8 +54,10 @@ endif()
 
 if(WIN32)
     set(LIBRESOLV_LIBRARY)
+    set(LIBDL_LIBRARY)
 else()
     find_library(LIBRESOLV_LIBRARY NAMES resolv libresolv)
+	find_library(LIBDL_LIBRARY NAMES dl libdl)
 endif()
 
 #prepare config files
@@ -184,7 +186,7 @@ endif()
 # gmodule
 add_library(gmodule gmodule/gmodule.c)
 target_compile_definitions(gmodule PRIVATE G_LOG_DOMAIN="GModule")
-target_link_libraries(gmodule PRIVATE glib ${LIBINTL_LIBRARY})
+target_link_libraries(gmodule PRIVATE glib ${LIBINTL_LIBRARY} ${LIBDL_LIBRARY})
 target_include_directories(gmodule PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gmodule>)
 target_include_directories(gmodule PRIVATE ${LIBINTL_INCLUDE_DIR} PUBLIC $<INSTALL_INTERFACE:include>)
 list(APPEND GLIB_TARGETS gmodule)
@@ -202,8 +204,10 @@ endif()
 
 if(NOT WIN32 AND NOT APPLE)
     file(GLOB INOTIFY_SOURCES gio/inotify/*.c)
-    add_library(inotify ${INOTIFY_SOURCES})
-    target_link_libraries(inotify PRIVATE gmodule)
+	add_library(inotify ${INOTIFY_SOURCES})
+	target_link_libraries(inotify PRIVATE gmodule glib gobject)
+	#set_target_properties(inotify PROPERTIES LINK_FLAGS "")
+	#target_link_options(inotify PRIVATE "-Wl,--no-allow-shlib-undefined")
     target_compile_definitions(inotify PRIVATE -DG_LOG_DOMAIN=\"GLib-GIO\" -DGIO_COMPILATION -DG_DISABLE_DEPRECATED)
     list(APPEND GLIB_TARGETS inotify)
 endif()
@@ -211,7 +215,7 @@ endif()
 if(APPLE)
     file(GLOB KQUEUE_SOURCES gio/kqueue/*.c)
     add_library(kqueue ${KQUEUE_SOURCES})
-    target_link_libraries(kqueue PRIVATE gmodule)
+    target_link_libraries(kqueue PRIVATE gmodule glib gobject)
     target_compile_definitions(kqueue PRIVATE -DG_LOG_DOMAIN=\"GLib-GIO\" -DGIO_COMPILATION -DG_DISABLE_DEPRECATED)
     list(APPEND GLIB_TARGETS kqueue)
 endif()
@@ -271,8 +275,10 @@ endif()
 list(APPEND GLIB_TARGETS gio)
 
 foreach(GTARGET ${GLIB_TARGETS})
+    #OUTPUT_NAME ${GTARGET}-${GLIB_DLL_SUFFIX}
     set_target_properties(${GTARGET} PROPERTIES
-        OUTPUT_NAME ${GTARGET}-${GLIB_DLL_SUFFIX}
+		RUNTIME_OUTPUT_NAME ${GTARGET}-${GLIB_DLL_SUFFIX}
+		LIBRARY_OUTPUT_NAME ${GTARGET}-${GLIB_LIB_SUFFIX}
         ARCHIVE_OUTPUT_NAME ${GTARGET}-${GLIB_LIB_SUFFIX})
 endforeach()
 
@@ -359,3 +365,24 @@ message(STATUS "  " ${ICONV_LIBRARY})
 message(STATUS "  " ${CHARSET_LIBRARY})
 message(STATUS "  " ${FFI_LIBRARY})
 message(STATUS "  " ${LIBINTL_LIBRARY})
+message(STATUS "  " ${LIBDL_LIBRARY})
+
+
+function(configure_pkg_config FILE)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
+                 "${CMAKE_CURRENT_BINARY_DIR}/${FILE}")
+
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endfunction()
+
+configure_pkg_config("gio-2.0.pc")
+configure_pkg_config("gio-unix-2.0.pc")
+configure_pkg_config("gio-windows-2.0.pc")
+configure_pkg_config("glib-2.0.pc")
+configure_pkg_config("gmodule-2.0.pc")
+configure_pkg_config("gmodule-export-2.0.pc")
+configure_pkg_config("gobject-2.0.pc")
+configure_pkg_config("gthread-2.0.pc")

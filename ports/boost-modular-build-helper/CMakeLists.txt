@@ -163,7 +163,12 @@ add_custom_target(boost ALL
     WORKING_DIRECTORY ${SOURCE_PATH}/build
 )
 
+if(BUILD_SHARED_LIBS)
+	set(BOOST_LIB_PATTERN ${CMAKE_CURRENT_BINARY_DIR}/stage/lib/*.so* ${CMAKE_CURRENT_BINARY_DIR}/boost/build/*/*.so*)
+else()
+	set(BOOST_LIB_PATTERN ${CMAKE_CURRENT_BINARY_DIR}/boost/build/*/*.a)
+endif()
+
 set(SUBDIR ${CMAKE_CURRENT_BINARY_DIR}/stage/lib)
 install(
     CODE "file(GLOB LIBS ${SUBDIR}/*.so.* ${SUBDIR}/*.so ${SUBDIR}/*.a ${SUBDIR}/*.dylib ${SUBDIR}/*.dylib.*)\nif(LIBS)\nfile(INSTALL \${LIBS} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")\nendif()"
-)

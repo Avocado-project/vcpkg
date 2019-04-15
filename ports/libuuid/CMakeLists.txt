@@ -5,7 +5,14 @@ configure_file(config.linux.h config.h COPYONLY)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(uuid STATIC
+message(STATUS "VCPKG_LIBRARY_LINKAGE=${VCPKG_LIBRARY_LINKAGE}")
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+	set(UUID_LIB_MODE STATIC)
+else()
+	set(UUID_LIB_MODE SHARED)
+endif()
+
+add_library(uuid ${UUID_LIB_MODE}
     clear.c
     compare.c
     copy.c

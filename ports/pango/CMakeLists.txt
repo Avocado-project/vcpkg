@@ -59,13 +59,15 @@ find_library(FREETYPE_LIBRARY freetype${FT_SUFFIX})
 find_path(HARFBUZZ_INCLUDE_DIR harfbuzz/hb.h)
 find_library(HARFBUZZ_LIBRARY harfbuzz)
 
+find_library(LIBMATH NAMES m libm)
+
 set(FONT_INCLUDE_DIRS ${FREETYPE_INCLUDE_DIR} ${FONTCONFIG_INCLUDE_DIR} ${HARFBUZZ_INCLUDE_DIR}/harfbuzz)
 set(FONT_LIBRARIES ${FREETYPE_LIBRARY} ${FONTCONFIG_LIBRARY} ${HARFBUZZ_LIBRARY})
 
 macro(pango_add_module MODULE_NAME)
     add_library(${MODULE_NAME} ${ARGN})
     target_include_directories(${MODULE_NAME} PRIVATE ${GLIB_INCLUDE_DIR} ${LIBINTL_INCLUDE_DIR})
-    target_link_libraries(${MODULE_NAME} ${LIBINTL_LIBRARY} ${GLIB_LIBRARIES})
+    target_link_libraries(${MODULE_NAME} ${LIBINTL_LIBRARY} ${GLIB_LIBRARIES} ${LIBMATH})
     target_compile_definitions(${MODULE_NAME} PRIVATE
         G_LOG_DOMAIN="Pango" PANGO_ENABLE_BACKEND PANGO_ENABLE_ENGINE 
         G_DISABLE_SINGLE_INCLUDES SYSCONFDIR="/dummy/etc" LIBDIR="/dummy/lib")
@@ -119,6 +121,7 @@ pango_add_module(pangowin32
     pango/pangowin32-fontmap.c
     pango/pangowin32-shape.c)
 target_link_libraries(pangowin32 usp10 pango gdi32)
+set(PANGOWIN32_LIB pangowin32)
 endif()
 
 pango_add_module(pangoft2
@@ -151,7 +154,7 @@ if(WIN32)
 endif()
 
 pango_add_module(pangocairo ${PANGO_CAIRO_SOURCES})
-target_link_libraries(pangocairo ${CAIRO_LIBRARIES} pango pangowin32 pangoft2 ${FONT_LIBRARIES})
+target_link_libraries(pangocairo ${CAIRO_LIBRARIES} pango ${PANGOWIN32_LIB} pangoft2 ${FONT_LIBRARIES})
 target_include_directories(pangocairo PRIVATE ${CAIRO_INCLUDE_DIR} ${FONT_INCLUDE_DIRS})
 
 
@@ -204,3 +207,21 @@ endforeach()
 foreach(FL ${FONT_LIBRARIES})
     message(STATUS "  " ${FL})
 endforeach()
+
+function(configure_pkg_config FILE)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
+                 "${CMAKE_CURRENT_BINARY_DIR}/${FILE}")
+
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endfunction()
+
+configure_pkg_config("pango.pc")
+configure_pkg_config("pangocairo.pc")
+configure_pkg_config("pangoft2.pc")
+if(WIN32)
+configure_pkg_config("pangowin32.pc")
+endif()
+configure_pkg_config("pangoxft.pc")

@@ -167,6 +167,10 @@ find_package(Freetype REQUIRED)
 find_package(unofficial-glib CONFIG REQUIRED)
 find_package(unofficial-fontconfig CONFIG REQUIRED)
 find_package(unofficial-pixman CONFIG REQUIRED)
+if(APPLE)
+  find_package(Threads REQUIRED)
+endif()
+find_library(LIBMATH NAMES m libm)
 
 # Cairo needs to be told which features of FreeType are availible
 add_definitions(
@@ -194,11 +198,12 @@ if (WITH_X11)
     target_compile_definitions(cairo PUBLIC -DCAIRO_HAS_XLIB_SURFACE=1)
 endif()
 
-target_link_libraries(cairo PRIVATE ZLIB::ZLIB PNG::PNG Freetype::Freetype unofficial::pixman::pixman-1 unofficial::fontconfig::fontconfig)
-
+set(CAIRO_WIN32_LIBS)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(cairo PRIVATE gdi32 msimg32 user32)
+	set(CAIRO_WIN32_LIBS, "gdi32 msimg32 user32")
 endif()
+
+target_link_libraries(cairo PRIVATE ${CAIRO_WIN32_LIBS} ${LIBMATH} Threads::Threads ZLIB::ZLIB PNG::PNG Freetype::Freetype unofficial::pixman::pixman-1 unofficial::fontconfig::fontconfig)
 
 # GObject support module
 
@@ -207,7 +212,7 @@ set(CAIRO_GOBJECT_SOURCES
     "../util/cairo-gobject/cairo-gobject-structs.c")
 
 # GObject support sources do not include header with export macro
-if(BUILD_SHARED_LIBS)
+if(BUILD_SHARED_LIBS AND (CMAKE_SYSTEM_NAME STREQUAL "Windows"))
     set_source_files_properties(
         "../util/cairo-gobject/cairo-gobject-enums.c"
         "../util/cairo-gobject/cairo-gobject-structs.c"
@@ -258,3 +263,18 @@ find_dependency(unofficial-pixman CONFIG)
 include(\${CMAKE_CURRENT_LIST_DIR}/unofficial-cairo-targets.cmake)
 ")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/unofficial-cairo-config.cmake DESTINATION share/unofficial-cairo)
+
+function(configure_pkg_config FILE)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
+                 "${CMAKE_CURRENT_BINARY_DIR}/${FILE}")
+
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endfunction()
+
+#configure_pkg_config("cairo-features-uninstalled.pc")
+#configure_pkg_config("cairo-features.pc")
+#configure_pkg_config("cairo-uninstalled.pc")
+#configure_pkg_config("cairo.pc")

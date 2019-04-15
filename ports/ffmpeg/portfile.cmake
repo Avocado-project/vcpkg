@@ -56,7 +56,7 @@ set(_csc_PROJECT_PATH ffmpeg)
 
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
 
-set(OPTIONS "--enable-asm --enable-yasm --disable-doc --enable-debug")
+set(OPTIONS "--enable-asm --enable-yasm --disable-doc")
 set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
 
 if("nonfree" IN_LIST FEATURES)
@@ -157,8 +157,11 @@ endif()
 
 set(OPTIONS_DEBUG "--debug") # Note: --disable-optimizations can't be used due to http://ffmpeg.org/pipermail/libav-user/2013-March/003945.html
 set(OPTIONS_RELEASE "")
+set(OPTIONS_DEBUG "--enable-debug")
 
 set(OPTIONS "${OPTIONS} ${OPTIONS_CROSS}")
+set(OPTIONS "${OPTIONS} --extra-cflags=-DHAVE_UNISTD_H=0")
+set(OPTIONS "${OPTIONS} --arch=${VCPKG_TARGET_ARCHITECTURE}")
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
@@ -256,7 +259,10 @@ list(LENGTH FILES_TO_REMOVE FILES_TO_REMOVE_LEN)
 if(FILES_TO_REMOVE_LEN GREATER 0)
     file(REMOVE ${FILES_TO_REMOVE})
 endif()
+
+if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/debug/share)
+endif()
 
 vcpkg_copy_pdbs()
 

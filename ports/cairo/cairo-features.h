@@ -8,6 +8,9 @@
 #ifdef _WIN32
 #define CAIRO_HAS_WIN32_SURFACE 1
 #define CAIRO_HAS_WIN32_FONT 1
+#else
+#define CAIRO_HAS_WIN32_SURFACE 0
+#define CAIRO_HAS_WIN32_FONT 0
 #endif
 
 /* Require libpng */

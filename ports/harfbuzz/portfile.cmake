@@ -89,3 +89,25 @@ endif()
 file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/harfbuzz RENAME copyright)
 
 vcpkg_test_cmake(PACKAGE_NAME harfbuzz)
+
+function(configure_pkg_config FILE)
+  configure_file("${SOURCE_PATH}/${FILE}.in"
+                 "${SOURCE_PATH}/${FILE}")
+
+  install(
+    FILES "${SOURCE_PATH}/${FILE}"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endfunction()
+
+message(STATUS "SOURCE_PATH=${SOURCE_PATH}")
+message(STATUS "BINARY_PATH=${BINARY_PATH}")
+message(STATUS "CURRENT_PACKAGES_DIR=${CURRENT_PACKAGES_DIR}")
+message(STATUS "CURRENT_INSTALLED_DIR=${CURRENT_INSTALLED_DIR}")
+message(STATUS "CMAKE_CURRENT_LIST_DIR=${CMAKE_CURRENT_LIST_DIR}")
+message(STATUS "includedir=${includedir}")
+message(STATUS "libdir=${libdir}")
+#configure_pkg_config("src/harfbuzz-gobject.pc")
+#configure_pkg_config("src/harfbuzz-icu.pc")
+#configure_pkg_config("src/harfbuzz-subset.pc")
+#configure_pkg_config("src/harfbuzz.pc")
