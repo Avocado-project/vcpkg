@@ -151,7 +151,14 @@ add_custom_target(build_libs ALL
     BYPRODUCTS ${INSTALL_LIBS}
 )
 
+if(BUILD_SHARED_LIBS)
+install(
+    FILES "${BUILDDIR}/libssl.so" "${BUILDDIR}/libcrypto.so"
+    DESTINATION lib
+)
+else()
 install(
     FILES ${INSTALL_LIBS}
     DESTINATION lib
 )
+endif()
