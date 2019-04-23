@@ -136,6 +136,14 @@ else()
     target_compile_definitions(LibLZMA PRIVATE -DHAVE_VISIBILITY=1)
 endif()
 
+find_package(Threads REQUIRED)
+target_link_libraries(lzma PRIVATE Threads::Threads)
+
+install(TARGETS lzma
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
+
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(LibLZMA PRIVATE -DDLL_EXPORT)
     target_compile_definitions(LibLZMA PUBLIC -DLIBLZMADLL_EXPORTS)

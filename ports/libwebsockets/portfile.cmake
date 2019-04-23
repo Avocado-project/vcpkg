@@ -11,6 +11,19 @@ vcpkg_from_github(
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" LWS_WITH_STATIC)
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" LWS_WITH_SHARED)
 
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+	message(STATUS ${curdir}/${child})
+    LIST(APPEND dirlist ${child})
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+
+SUBDIRLIST(SUBDIRS ${SOURCE_PATH})
+
+if(1)
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
@@ -24,14 +37,25 @@ vcpkg_configure_cmake(
     # OPTIONS_RELEASE -DOPTIMIZE=1
     # OPTIONS_DEBUG -DDEBUGGABLE=1
 )
+endif()
 
 vcpkg_install_cmake()
+
+message("CURRENT_PACKAGES_DIR=${CURRENT_PACKAGES_DIR}")
+message("SOURCE_PATH=${SOURCE_PATH}")
+SUBDIRLIST(SUBDIRS ${CURRENT_PACKAGES_DIR})
 
 if (NOT VCPKG_CMAKE_SYSTEM_NAME OR VCPKG_CMAKE_SYSTEM_NAME STREQUAL "windows" OR VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     vcpkg_fixup_cmake_targets(CONFIG_PATH cmake)
 else()
     vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/libwebsockets)
 endif()
+
+# if(WIN32)
+# vcpkg_fixup_cmake_targets(CONFIG_PATH cmake)
+# else()
+# vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake TARGET_PATH share)
+# endif()
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
@@ -48,9 +72,14 @@ file(WRITE ${CURRENT_PACKAGES_DIR}/share/libwebsockets/LibwebsocketsTargets-rele
 file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/libwebsockets)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/libwebsockets/LICENSE ${CURRENT_PACKAGES_DIR}/share/libwebsockets/copyright)
 if (VCPKG_LIBRARY_LINKAGE STREQUAL static)
+<<<<<<< HEAD
     if (NOT VCPKG_CMAKE_SYSTEM_NAME OR VCPKG_CMAKE_SYSTEM_NAME STREQUAL "windows" OR VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
         file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/websockets_static.lib ${CURRENT_PACKAGES_DIR}/debug/lib/websockets.lib)
         file(RENAME ${CURRENT_PACKAGES_DIR}/lib/websockets_static.lib ${CURRENT_PACKAGES_DIR}/lib/websockets.lib)
     endif()
+=======
+	file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/websockets_static.lib ${CURRENT_PACKAGES_DIR}/debug/lib/websockets.lib)
+	file(RENAME ${CURRENT_PACKAGES_DIR}/lib/websockets_static.lib ${CURRENT_PACKAGES_DIR}/lib/websockets.lib)
+>>>>>>> 28716192d... Fixed build issues with ffmpeg, liblzma, libwebsockets and zstd.
 endif ()
 vcpkg_copy_pdbs()

@@ -18,6 +18,6 @@ cd "$PATH_TO_BUILD_DIR"
 echo "=== CONFIGURING ==="
 "$PATH_TO_SRC_DIR/configure" "--prefix=$PATH_TO_PACKAGE_DIR" $4
 echo "=== BUILDING ==="
-make -j6
+make -j1
 echo "=== INSTALLING ==="
 make install
