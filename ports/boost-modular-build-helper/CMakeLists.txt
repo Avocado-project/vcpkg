@@ -172,3 +172,4 @@ endif()
 set(SUBDIR ${CMAKE_CURRENT_BINARY_DIR}/stage/lib)
 install(
     CODE "file(GLOB LIBS ${SUBDIR}/*.so.* ${SUBDIR}/*.so ${SUBDIR}/*.a ${SUBDIR}/*.dylib ${SUBDIR}/*.dylib.*)\nif(LIBS)\nfile(INSTALL \${LIBS} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")\nendif()"
+)

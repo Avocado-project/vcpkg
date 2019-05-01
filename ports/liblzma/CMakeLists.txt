@@ -137,9 +137,9 @@ else()
 endif()
 
 find_package(Threads REQUIRED)
-target_link_libraries(lzma PRIVATE Threads::Threads)
+target_link_libraries(LibLZMA PRIVATE Threads::Threads)
 
-install(TARGETS lzma
+install(TARGETS LibLZMA
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib)
