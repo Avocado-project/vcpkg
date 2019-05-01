@@ -200,7 +200,9 @@ endif()
 
 set(CAIRO_WIN32_LIBS)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	set(CAIRO_WIN32_LIBS, "gdi32 msimg32 user32")
+	set(CAIRO_WIN32_LIBS gdi32 msimg32 user32)
+else()
+	set(CAIRO_WIN32_LIBS Threads::Threads)
 endif()
 
 target_link_libraries(cairo PRIVATE ${CAIRO_WIN32_LIBS} ${LIBMATH} Threads::Threads ZLIB::ZLIB PNG::PNG Freetype::Freetype unofficial::pixman::pixman-1 unofficial::fontconfig::fontconfig)
