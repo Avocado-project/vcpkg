@@ -59,7 +59,7 @@ find_library(FREETYPE_LIBRARY freetype${FT_SUFFIX})
 find_path(HARFBUZZ_INCLUDE_DIR harfbuzz/hb.h)
 find_library(HARFBUZZ_LIBRARY harfbuzz)
 
-if(!WIN32)
+if(UNIX)
 find_library(LIBMATH NAMES m libm)
 endif()
 
