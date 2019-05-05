@@ -78,7 +78,7 @@ if(MSVC)
     target_compile_options(pixman-1 PRIVATE "/wd4244" "/wd4146" "/wd4996") #  PUBLIC "/D_CRT_SECURE_NO_WARNINGS"
 endif()
 
-if(!MSVC)
+if(UNIX)
 	target_link_libraries(pixman-1 PRIVATE Threads::Threads ${LIBMATH})
 endif()
 
