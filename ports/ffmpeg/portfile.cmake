@@ -165,6 +165,7 @@ set(OPTIONS "${OPTIONS} --arch=${VCPKG_TARGET_ARCHITECTURE}")
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
+	set(OPTIONS "${OPTIONS} --enable-pic")
     if (VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
         set(OPTIONS "${OPTIONS} --extra-ldflags=-APPCONTAINER --extra-ldflags=WindowsApp.lib")
     endif()
