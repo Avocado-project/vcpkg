@@ -43,6 +43,10 @@ else()
     set_target_properties(fontconfig PROPERTIES DEFINE_SYMBOL "FcPublic=__attribute__((visibility(\"default\")))")
 endif()
 
+if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+	add_definitions(-D_WIN64)
+endif()
+
 target_include_directories(fontconfig PRIVATE .
     ${FC_INCLUDE_DIR}/alias
     ${EXPAT_INCLUDE_DIR})
