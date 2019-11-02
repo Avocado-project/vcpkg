@@ -255,9 +255,10 @@ if(NOT GLIB_SKIP_HEADERS)
     list(FILTER GIO_HEADERS EXCLUDE REGEX "private.h\$")
     install(FILES ${GIO_HEADERS} ${CMAKE_BINARY_DIR}/config/gio/gnetworking.h DESTINATION include/gio)
 endif()
-
-find_library(LIBSELINUX_LIBRARY NAMES selinux libselinux)
-message(STATUS "####LIBSELINUX_LIBRARY=${LIBSELINUX_LIBRARY}")
+if(LINUX)
+	find_library(LIBSELINUX_LIBRARY NAMES selinux libselinux)
+	message(STATUS "####LIBSELINUX_LIBRARY=${LIBSELINUX_LIBRARY}")
+endif()
 
 add_library(gio ${GIO_SOURCES})
 target_compile_definitions(gio PRIVATE GIO_COMPILATION G_LOG_DOMAIN="GLib-GIO")
