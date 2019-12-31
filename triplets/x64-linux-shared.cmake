@@ -34,7 +34,7 @@ if(PORT MATCHES "^boost-.*")
 	message(STATUS "MATCHED PORT=${PORT}")
 	#set(VCPKG_LINKER_FLAGS_DEBUG "${SYSTEM_HOOK_ROOT}/SysHook/linux/x64/sh_hook_new.o ${SYSTEM_HOOK_ROOT}/SysHook/linux/x64/libSysHook.so")
 	#set(VCPKG_LINKER_FLAGS_RELEASE "${SYSTEM_HOOK_ROOT}/SysHook/linux/x64/sh_hook_new.o ${SYSTEM_HOOK_ROOT}/SysHook/linux/x64/libSysHook.so")
-	set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} ${SYSTEM_HOOK_ROOT}/SysHook/linux/x64/sh_hook_new.o -L${SYSTEM_HOOK_ROOT}/SysHook/linux/x64 -lSysHook")
+	set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} ${SYSTEM_HOOK_ROOT}/SysHook/linux/x64/sh_hook_new.o -L${SYSTEM_HOOK_ROOT}/SysHook/linux/x64 -lSysHook -lstdc++")
 endif()
 
 #set( ENV{LDFLAGS} "${VCPKG_LINKER_FLAGS}" )
