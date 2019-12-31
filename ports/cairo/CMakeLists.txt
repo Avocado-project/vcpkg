@@ -170,7 +170,9 @@ find_package(unofficial-pixman CONFIG REQUIRED)
 if(APPLE)
   find_package(Threads REQUIRED)
 endif()
-find_library(LIBMATH NAMES m libm)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  find_library(LIBMATH NAMES m libm)
+endif()
 
 # Cairo needs to be told which features of FreeType are availible
 add_definitions(

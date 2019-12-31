@@ -53,9 +53,6 @@ set(PIXMAN_DEFS
 find_package(Threads REQUIRED)
 find_library(LIBMATH NAMES m libm)
 
-add_library(pixman-1 ${SOURCES})
-target_include_directories(pixman-1 PUBLIC $<INSTALL_INTERFACE:include>)
-
 if(VCPKG_TARGET_ARCHITECTURE STREQUAL arm64 OR VCPKG_TARGET_ARCHITECTURE STREQUAL arm)
     # don't enable SSE2 for arm64-windows and arm-windows
 else()
