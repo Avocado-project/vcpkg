@@ -23,6 +23,8 @@ file(GLOB UV_SOURCES_UNIX
     src/unix/thread.c
     src/unix/tty.c
     src/unix/udp.c
+	src/unix/random-devurandom.c
+	src/unix/random-getrandom.c
 )
 file(GLOB UV_SOURCES_LINUX
     src/unix/proctitle.c
@@ -30,8 +32,9 @@ file(GLOB UV_SOURCES_LINUX
     src/unix/linux-inotify.c
     src/unix/linux-syscalls.c
     src/unix/procfs-exepath.c
-    src/unix/sysinfo-loadavg.c
-    src/unix/sysinfo-memory.c
+#    src/unix/sysinfo-loadavg.c
+#    src/unix/sysinfo-memory.c
+	src/unix/random-sysctl-linux.c
 )
 file(GLOB UV_SOURCES_DARWIN
     src/unix/proctitle.c
@@ -47,6 +50,7 @@ file(GLOB UV_SOURCES_FREEBSD
     src/unix/bsd-proctitle.c
     src/unix/bsd-ifaddrs.c
     src/unix/kqueue.c
+	src/unix/netbsd.c
 )
 file(GLOB UV_SOURCES_WIN src/win/*.c)
 
@@ -62,7 +66,11 @@ else() # Assume some Linux variant
     add_library(libuv ${UV_SOURCES_COMMON} ${UV_SOURCES_UNIX} ${UV_SOURCES_LINUX})
 endif()
 
-target_link_libraries(libuv PRIVATE Threads::Threads)
+if (UNIX)
+	FIND_LIBRARY (LIB_DLOPEN NAMES dl)
+endif()
+
+target_link_libraries(libuv PRIVATE Threads::Threads ${LIB_DLOPEN})
 target_include_directories(libuv PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
 set_target_properties(libuv PROPERTIES DEFINE_SYMBOL BUILDING_UV_SHARED)
 

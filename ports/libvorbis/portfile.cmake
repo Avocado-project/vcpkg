@@ -33,10 +33,10 @@ vcpkg_configure_cmake(
 )
 
 vcpkg_install_cmake()
-vcpkg_fixup_cmake_targets(
-    CONFIG_PATH lib/cmake/Vorbis
-    TARGET_PATH share/Vorbis
-)
+#vcpkg_fixup_cmake_targets(
+#    CONFIG_PATH lib/cmake/Vorbis
+#    TARGET_PATH share/Vorbis
+#)
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 

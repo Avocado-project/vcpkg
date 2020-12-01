@@ -36,6 +36,12 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     selinux HAVE_SELINUX
 )
 
+if(CMAKE_HOST_UNIX)
+    # Configure is using libpcre.so in tests, so LD_LIBRARY_PATH must be set correctly for them to find *.so files
+    set(BACKUP_LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH})
+    set(ENV{LD_LIBRARY_PATH} "${BACKUP_LD_LIBRARY_PATH}:${CURRENT_INSTALLED_DIR}/lib")
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
@@ -47,6 +53,11 @@ vcpkg_configure_cmake(
 )
 
 vcpkg_install_cmake()
+
+if(CMAKE_HOST_UNIX)
+    set(ENV{LD_LIBRARY_PATH} "${BACKUP_LD_LIBRARY_PATH}")
+endif()
+
 vcpkg_fixup_cmake_targets(CONFIG_PATH share/unofficial-glib TARGET_PATH share/unofficial-glib)
 
 vcpkg_copy_pdbs()

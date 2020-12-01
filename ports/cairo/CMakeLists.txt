@@ -217,7 +217,6 @@ if (WITH_X11)
     target_compile_definitions(cairo PUBLIC -DCAIRO_HAS_XLIB_SURFACE=1)
 endif()
 target_include_directories(cairo PUBLIC ${FREETYPE_INCLUDE_DIRS})
-target_link_libraries(cairo PRIVATE ZLIB::ZLIB PNG::PNG Freetype::Freetype unofficial::pixman::pixman-1 Fontconfig::Fontconfig)
 
 set(CAIRO_WIN32_LIBS)
 if(WIN32)
@@ -225,8 +224,7 @@ if(WIN32)
 else()
 	set(CAIRO_WIN32_LIBS Threads::Threads)
 endif()
-
-target_link_libraries(cairo PRIVATE ${CAIRO_WIN32_LIBS} ${LIBMATH} Threads::Threads ZLIB::ZLIB PNG::PNG Freetype::Freetype unofficial::pixman::pixman-1 unofficial::fontconfig::fontconfig)
+target_link_libraries(cairo PRIVATE ${CAIRO_WIN32_LIBS} ${LIBMATH} ZLIB::ZLIB PNG::PNG Freetype::Freetype unofficial::pixman::pixman-1 Fontconfig::Fontconfig)
 
 # GObject support module
 
