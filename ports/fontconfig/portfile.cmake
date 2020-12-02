@@ -84,6 +84,7 @@ file(INSTALL "${SOURCE_PATH}/COPYING" DESTINATION "${CURRENT_PACKAGES_DIR}/share
 if(NOT VCPKG_TARGET_IS_WINDOWS)
     set(ENV{FONTCONFIG_PATH} "${CURRENT_PACKAGES_DIR}/etc/fonts")
     set(ENV{FONTCONFIG_FILE} "${CURRENT_PACKAGES_DIR}/etc/fonts/fonts.conf")
+    set(ENV{LD_LIBRARY_PATH} "${CURRENT_PACKAGES_DIR}/lib")
     vcpkg_execute_required_process(COMMAND "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin/fc-cache${VCPKG_TARGET_EXECUTABLE_SUFFIX}" --verbose
                                    WORKING_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin"
                                    LOGNAME fc-cache-${TARGET_TRIPLET})
