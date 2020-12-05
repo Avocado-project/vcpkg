@@ -105,11 +105,29 @@ else()
     endif()
     
     add_definitions("-DGIO_MODULE_DIR=\"gio/modules\"")
+
+	find_program(DTRACE_EXE NAMES dtrace)
+	message(STATUS "DTRACE_EXE=${DTRACE_EXE}")
+	if(DTRACE_EXE)
+		find_program(MAKE_EXE NAMES make REQUIRED)
+		execute_process(
+			COMMAND ${MAKE_EXE} "gobject_probes.h"
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/config/gobject"
+		)
+		execute_process(
+			COMMAND ${MAKE_EXE} "gio_probes.h"
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/config/gio"
+		)
+		execute_process(
+			COMMAND ${MAKE_EXE} "glib_probes.h"
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/config/glib"
+		)
+	endif()
 endif()
 install(FILES ${CMAKE_BINARY_DIR}/config/config.h DESTINATION include/glib)
 install(FILES ${CMAKE_SOURCE_DIR}/msvc_recommended_pragmas.h DESTINATION include)
 
-include_directories(${CMAKE_BINARY_DIR}/config ${CMAKE_BINARY_DIR}/config/glib ${CMAKE_BINARY_DIR}/config/gio ${CMAKE_BINARY_DIR}/config/gmodule)
+include_directories(${CMAKE_BINARY_DIR}/config ${CMAKE_BINARY_DIR}/config/glib ${CMAKE_BINARY_DIR}/config/gio ${CMAKE_BINARY_DIR}/config/gmodule ${CMAKE_BINARY_DIR}/config/gobject)
 include_directories(. glib)
 
 # This macro purposely doesn't find nodes with sources that have additional properties set
@@ -257,7 +275,6 @@ add_library(gio ${GIO_SOURCES})
 target_compile_definitions(gio PRIVATE GIO_COMPILATION G_LOG_DOMAIN="GLib-GIO")
 target_link_libraries(gio PRIVATE glib gmodule gobject ZLIB::ZLIB ${LIBRESOLV_LIBRARY} ${Intl_LIBRARIES})
 target_include_directories(gio PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gio> $<INSTALL_INTERFACE:include/gio>)
-message(STATUS "####LIBSELINUX_LIBRARY TEST!!!!!!")
 if(WIN32)
     target_link_libraries(gio PRIVATE ws2_32 shlwapi dnsapi iphlpapi advapi32 shell32)
 elseif(APPLE)
